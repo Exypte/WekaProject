@@ -23,6 +23,11 @@ public class Main {
 			 //evaluation.evaluateModel(j48, instances);
 			 evaluation.crossValidateModel(j48, instances, 5, new Random(1));
 			 System.out.println(evaluation.toSummaryString());
+			 System.out.println(evaluation.incorrect());
+			 System.out.println(evaluation.pctIncorrect());
+			 System.out.println(evaluation.correct());
+			 System.out.println(evaluation.pctCorrect());
+			 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
