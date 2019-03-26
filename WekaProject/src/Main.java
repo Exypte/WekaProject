@@ -59,10 +59,7 @@ public class Main {
 				j48.setMinNumObj(i);
 				j48.buildClassifier(instances);
 				
-				//System.out.println(j48.graph());
-				
 				Evaluation evaluation = new Evaluation(instances);
-				//evaluation.evaluateModel(j48, instances);
 				evaluation.crossValidateModel(j48, instances, 5, new Random(1));
 				
 				System.out.println(evaluation.toSummaryString());
