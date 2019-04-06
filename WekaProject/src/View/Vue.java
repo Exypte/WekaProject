@@ -1,5 +1,6 @@
 package View;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -12,22 +13,27 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import Controler.InterfaceControler;
-import Model.AlgoJ48;
+import Model.Algo;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -37,17 +43,23 @@ public class Vue implements Observateur{
 	private JFrame frame;
 	private JTextArea tx;
 	private JScrollPane sp;
+	private JRadioButton rb;
 
 	XYSeries series;
 	XYSeriesCollection data;
 
-	private AlgoJ48 j48;
+	private Algo algo;
 	private InterfaceControler controler;
 
-	public Vue(AlgoJ48 j48, InterfaceControler controler){
+	private JFreeChart chart;
+	private ChartPanel chartPanel;
+	
+	private String saveAlgoName;
+	
+	public Vue(Algo j48, InterfaceControler controler){
 
-		this.j48 = j48;
-		this.j48.enregistrerObservateur(this);
+		this.algo = j48;
+		this.algo.enregistrerObservateur(this);
 
 		this.controler = controler;
 
@@ -60,7 +72,7 @@ public class Vue implements Observateur{
 		this.frame.setTitle("Comparaison d'algorithmes de classification");
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.frame.setSize(new Dimension(1000, 800));
-		this.frame.setLocation(1000, 500);
+		this.frame.setLocation(200, 200);
 
         GridBagConstraints constraints = new GridBagConstraints();
         
@@ -76,8 +88,8 @@ public class Vue implements Observateur{
 
 		this.series = new XYSeries("Jeu de donne");
 		this.data = new XYSeriesCollection(this.series);
-		JFreeChart chart = ChartFactory.createXYLineChart("Pourcentage d'instance correctement classé", "Nombre d'instance", "Pourcentage incorrect", data);
-		ChartPanel chartPanel = new ChartPanel(chart);
+		chart = ChartFactory.createXYLineChart("Pourcentage d'instance mal classé", "Nombre d'instance", "Pourcentage incorrect", data);
+		chartPanel = new ChartPanel(chart);
 		panelTop.add(chartPanel);
 
 		GridLayout gridBottom = new GridLayout(0, 4);
@@ -88,16 +100,114 @@ public class Vue implements Observateur{
 		
 		JPanel jpanelStart = new JPanel(new GridBagLayout());
         constraints.anchor = GridBagConstraints.CENTER;
-		Icon icon_run = new ImageIcon("icons/icon_run.png");
-		JButton start = new JButton(icon_run);
-		jpanelStart.add(start, constraints);
+		JButton startJ48 = new JButton("Algo J48");
+		jpanelStart.add(startJ48, constraints);
 		splitPanel.add(jpanelStart);
+		
+        // create a new panel with GridBagLayout manager
+        JPanel newPanel = new JPanel(new GridBagLayout());
+         
+        GridBagConstraints constraint = new GridBagConstraints();
+        constraint.insets = new Insets(10, 10, 10, 10);
+         
+        // add components to the panel
+        constraint.gridx = 0;
+        constraint.gridy = 0;     
+        JLabel labelMin = new JLabel("Min obj : ");
+        newPanel.add(labelMin, constraint);
+ 
+        constraint.gridx = 1;
+        JTextField tfMin = new JTextField(2);
+        tfMin.setText("2");
+        newPanel.add(tfMin, constraint);
         
+        constraint.gridx = 0;
+        constraint.gridy = 1;
+        JLabel labelMax = new JLabel("Max obj : ");
+        newPanel.add(labelMax, constraint);
+         
+        constraint.gridx = 1;
+        JTextField tfMax = new JTextField(2);
+        tfMax.setText("10");
+        newPanel.add(tfMax, constraint);
+         
+        // set border for the panel
+        newPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(), "Nombre d'instance :"));
+		
+        splitPanel.add(newPanel);
+        
+		panelBottom.add(splitPanel);
+		
+		splitPanel = new JPanel(splitGrid);
+		
+		jpanelStart = new JPanel(new GridBagLayout());
+        constraints.anchor = GridBagConstraints.CENTER;
+		JButton startIBK = new JButton("Algo IBK");
+		jpanelStart.add(startIBK, constraints);
+		splitPanel.add(jpanelStart);
+		
+        // create a new panel with GridBagLayout manager
+        newPanel = new JPanel(new GridBagLayout());
+         
+        constraint = new GridBagConstraints();
+        constraint.insets = new Insets(10, 10, 10, 10);
+         
+        // add components to the panel
+        constraint.gridx = 0;
+        constraint.gridy = 0;     
+        JLabel labelMinVoisin = new JLabel("Min voisin : ");
+        newPanel.add(labelMinVoisin, constraint);
+ 
+        constraint.gridx = 1;
+        JTextField tfMinVoisin = new JTextField(2);
+        tfMinVoisin.setText("2");
+        newPanel.add(tfMinVoisin, constraint);
+        
+        constraint.gridx = 0;
+        constraint.gridy = 1;
+        JLabel labelMaxVoisin = new JLabel("Max voisin : ");
+        newPanel.add(labelMaxVoisin, constraint);
+         
+        constraint.gridx = 1;
+        JTextField tfMaxVoisin = new JTextField(2);
+        tfMaxVoisin.setText("10");
+        newPanel.add(tfMaxVoisin, constraint);
+         
+        // set border for the panel
+        newPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(), "Nombre de voisin :"));
+        
+        splitPanel.add(newPanel);
+        
+		panelBottom.add(splitPanel);
+		
+		splitPanel = new JPanel(splitGrid);
+		
+		jpanelStart = new JPanel(new GridBagLayout());
+        constraints.anchor = GridBagConstraints.CENTER;
+		JButton startBoostingJ48 = new JButton("Algo Boosting J48");
+		jpanelStart.add(startBoostingJ48, constraints);
+		splitPanel.add(jpanelStart);
+		
+		jpanelStart = new JPanel(new GridBagLayout());
+        constraints.anchor = GridBagConstraints.CENTER;
+		JButton startBoostingIBK = new JButton("Algo Boosting IBK");
+		jpanelStart.add(startBoostingIBK, constraints);
+		splitPanel.add(jpanelStart);
+		
+		panelBottom.add(splitPanel);
+		
+		splitPanel = new JPanel(splitGrid);
+		
 		JPanel jpanelParcourire = new JPanel(new GridBagLayout());
         constraints.anchor = GridBagConstraints.CENTER;
-		JButton parcourire = new JButton("Parcourire Map");
+		JButton parcourire = new JButton("Parcourire jeux de donnés");
 		jpanelParcourire.add(parcourire, constraints);
 		splitPanel.add(jpanelParcourire);
+		
+		this.rb = new JRadioButton("Nouveau graph !");
+		splitPanel.add(this.rb);
 		
 		panelBottom.add(splitPanel);
 		
@@ -105,11 +215,55 @@ public class Vue implements Observateur{
 		this.frame.add(panelBottom);
 		this.frame.setVisible(true);
 
-		start.addActionListener(new ActionListener() {
+		startJ48.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				controler.start();
+				if(checkIfInt(tfMax.getText(), tfMin.getText())) {
+					algo.setMin(Integer.parseInt(tfMin.getText()));
+					algo.setMax(Integer.parseInt(tfMax.getText()));
+					saveAlgoName = "AlgoJ48 min = " + tfMin.getText() + " max = " + tfMax.getText();
+					controler.startJ48();
+				}
+			}
+		});
+		
+		startIBK.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(checkIfInt(tfMaxVoisin.getText(), tfMinVoisin.getText())) {
+					algo.setMin(Integer.parseInt(tfMinVoisin.getText()));
+					algo.setMax(Integer.parseInt(tfMaxVoisin.getText()));
+					saveAlgoName = "AlgoIBK min = " + tfMinVoisin.getText() + " max = " + tfMaxVoisin.getText();
+					controler.startIBK();
+				}
+			}
+		});
+
+		startBoostingJ48.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(checkIfInt(tfMax.getText(), tfMin.getText())) {
+					algo.setMin(Integer.parseInt(tfMin.getText()));
+					algo.setMax(Integer.parseInt(tfMax.getText()));
+					saveAlgoName = "AlgoBoostingJ48 min = " + tfMin.getText() + " max = " + tfMax.getText();
+					controler.boostingJ48();
+				}
+			}
+		});
+		
+		startBoostingIBK.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(checkIfInt(tfMaxVoisin.getText(), tfMinVoisin.getText())) {
+					algo.setMin(Integer.parseInt(tfMinVoisin.getText()));
+					algo.setMax(Integer.parseInt(tfMaxVoisin.getText()));
+					saveAlgoName = "AlgoBoostingIBK min = " + tfMinVoisin.getText() + " max = " + tfMaxVoisin.getText();
+					controler.boostingIBK();
+				}
 			}
 		});
 
@@ -136,16 +290,57 @@ public class Vue implements Observateur{
 	@Override
 	public void actualiser(ArrayList<String> summaryString, ArrayList<Integer> numInstance, ArrayList<Double> pctIncorrect) {
 		// TODO Auto-generated method stub
+		
+		if(!this.rb.isSelected()) {
+			this.series.clear();
+			this.tx.setText("");
 
-		this.series.clear();
-		this.tx.setText("");
+			for(int i = 0; i < summaryString.size(); i++) {
+				this.tx.append(summaryString.get(i));
+			}
 
-		for(int i = 0; i < summaryString.size(); i++) {
-			this.tx.append(summaryString.get(i));
+			for(int i = 0; i < numInstance.size(); i++) {
+				this.series.add(numInstance.get(i), pctIncorrect.get(i));
+			}
+		}else {
+			nouveauGraph(numInstance, pctIncorrect);
 		}
-
-		for(int i = 0; i < numInstance.size(); i++) {
-			this.series.add(numInstance.get(i), pctIncorrect.get(i));
+	}
+	
+	public void nouveauGraph(ArrayList<Integer> numInstance, ArrayList<Double> pctIncorrect) {
+	    
+		XYSeries seriesNew = new XYSeries("Jeu de donne");
+		
+	    for(int i = 0; i < numInstance.size(); i++) {
+			seriesNew.add(numInstance.get(i), pctIncorrect.get(i));
 		}
+	    
+	    XYSeriesCollection dataNew = new XYSeriesCollection(seriesNew);
+	    JFreeChart chart = ChartFactory.createXYLineChart("Pourcentage d'instance mal classé", "Nombre d'instance", "Pourcentage incorrect", dataNew);
+
+	    ChartPanel chartPanel = new ChartPanel(chart);
+	    chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+	    JFrame frameNew = new JFrame();
+		frameNew.setTitle(this.saveAlgoName);
+		//frameNew.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frameNew.setSize(new Dimension(500, 500));
+		frameNew.setLocation(1200, 200);
+		frameNew.add(chartPanel);
+		frameNew.setVisible(true);
+	}
+	
+	boolean checkIfInt(String min, String max) {
+		
+		boolean isNum = true;
+		
+		try {
+			Integer.parseInt(min);
+			Integer.parseInt(max);
+		}catch (NumberFormatException e) {
+			// TODO: handle exception
+			isNum = false;
+		}
+		
+		return isNum;
 	}
 }
