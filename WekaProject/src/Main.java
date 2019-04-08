@@ -8,8 +8,8 @@ public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
-		Algo algo = new Algo("data/iris.arff");
+
+		Algo algo = new Algo("iris.arff");
 		
 		InterfaceControler controler = new ControlerCommands(algo);
 		
